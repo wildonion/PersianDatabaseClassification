@@ -6,11 +6,6 @@
 
 
 
-
-# TODO : implement backward algorithm from scratch using torch
-
-# https://github.com/hunkim/PyTorchZeroToAll/blob/master/03_auto_gradient.py
-# https://github.com/hunkim/PyTorchZeroToAll/blob/master/02_manual_gradient.py
 # https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
 
 import torch
