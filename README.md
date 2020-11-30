@@ -1,2 +1,5 @@
-# cpc-mlp
-Simple Classification on Persian Alphabet Images using MLP in Pytorch
+## Setup
+
+```console
+pip install requirements.txt
+```
