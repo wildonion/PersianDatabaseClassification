@@ -4,7 +4,7 @@
 
 
 # TODO : complete readme
-
+# TODO : add mean and std for persian database
 
 
 
