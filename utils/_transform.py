@@ -8,7 +8,7 @@ import torch
 
 class ToTensor:
 	def __call__(self, image):
-		image = image.transpose((2, 0, 1)) # torch image: C X H X W
+		# image = image.transpose((2, 0, 1)) # torch image: C X H X W
 		return torch.from_numpy(image)
 			   
 
@@ -24,7 +24,7 @@ class UnNormalize:
 		return image
 
 
-class Normalize:
+class Normalize: # standardize
 	def __init__(self, mean, std):
 		self.mean = mean
 		self.std = std
