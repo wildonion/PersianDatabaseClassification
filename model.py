@@ -13,6 +13,8 @@ class MLP(nn.Module):
 	def __init__(self, input_neurons, output_neurons, learning_rate):
 		"""
 			reference : https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
+
+			image batch size : (batch, C, H, W) ---flattened---> (batch, C*H*W)
 		"""
 		super(MLP, self).__init__()
 		self.learning_rate = learning_rate
@@ -31,10 +33,10 @@ class MLP(nn.Module):
 
 
 	def forward(self, batch):
-		self.y1  = self.input_to_h1(batch) # y1 = batch * w1
-		self.y2  = F.dropout(self.relu(self.y1), p=0.5) # y2 = relu(y1) 
+		self.y1 = self.input_to_h1(batch) # y1 = batch * w1
+		self.y2 = F.dropout(self.relu(self.y1), p=0.5, training=self.training) # y2 = relu(y1) - active only on training
 		self.y3 = self.h1_to_h2(self.y2) # y3 = y2 * w2
-		self.y4 = F.dropout(self.relu(self.y3), p=0.5) # y4 = relu(y3)
+		self.y4 = F.dropout(self.relu(self.y3), p=0.5, training=self.training) # y4 = relu(y3) - active only on training
 		self.y5 = self.h2_to_output(self.y4) # y5 = y4 * w3
 		return self.y5
 
@@ -116,15 +118,46 @@ class MLP(nn.Module):
 
 
 
-
 class CNN(nn.Module):
-	def __init__(self):
+	"""
+		image batch size : (batch, C, H, W) 
+	"""
+	def __init__(self, input_channels, output_neurons):
 		super(CNN, self).__init__()
+		self.conv1     = nn.Conv2d(input_channels, 16, kernel_size=5, stride=2) 
+		self.conv2     = nn.Conv2d(16, 32, kernel_size=5, stride=2)
 
+
+		"""
+		C * H * W is the number of input neurons for fc1 layer which is the flattened batch image
+		https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
+		"""
+		input_neurons_for_fc1 = self.conv2.shape[1]*self.conv2.shape[2]*self.conv2.shape[3]
+
+
+		self.fc1       = nn.Linear(input_neurons_for_fc1, 200)
+		self.fc2       = nn.Linear(200, 128)
+		self.fc3       = nn.Linear(128, output_neurons)
+		self.relu  	   = nn.ReLU()
+		self.maxpool2d = nn.MaxPool2d(2, 2)
 
 
 	def forward(self, batch):
-		pass
+		h1 = self.relu(self.maxpool2d(self.conv1(batch)))
+		h1 = F.dropout(h1, p=0.5, training=self.training)
+
+		h2 = self.relu(self.maxpool2d(self.conv2(h1), 2))
+		h2 = F.dropout(h2, p=0.5, training=self.training)
+		h2 = h2.view(-1, input_neurons_for_fc1)
+
+		h3 = self.relu(self.fc1(h2))
+		h3 = F.dropout(h3, p=0.5, training=self.training)
+
+		h4 = self.relu(self.fc2(h3))
+		h4 = F.dropout(h4, p=0.5, training=self.training)
+
+		h5 = self.fc2(h4)
+		return h4
 
 
 
