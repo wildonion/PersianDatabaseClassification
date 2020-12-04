@@ -28,8 +28,7 @@ CNN:
 
 ## Usage
 ```console
-python classifier.py --network mlp --batch-size 32 --num-workers 4 \
-					 --epoch 200 --learning-rate 0.001 --device cpu --image-size 32 --classes 47
+python classifier.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
 ```
 
 ```console
@@ -41,5 +40,14 @@ python classifier.py --pre-trained-model path/to/cnn.pth
 ```
 
 
-## Description
+## Procedures
 
+#### Preprocessing
+
+#### calculating std and mean for dataset
+
+#### building dataset and dataloader
+
+#### training and evaluating on selected model
+
+#### prediction
