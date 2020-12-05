@@ -27,13 +27,20 @@ CNN:
 * Export your active environment to _scai.yml_ file: ```conda env export | grep -v "^prefix: " > scai.yml```
 
 ## Usage
+
+> Run for training on selected model
+
 ```console
 python classifier.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
 ```
 
+> Run for prediction using mlp model  
+
 ```console
 python classifier.py --pre-trained-model path/to/mlp.pth
 ```
+
+> Run for prediction using cnn model
 
 ```console
 python classifier.py --pre-trained-model path/to/cnn.pth
@@ -54,18 +61,18 @@ python utils/_img_to_csv.py --path /path/to/dataset --image-size 64
 
 #### calculating std and mean of your dataset
 
-In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data, by using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize your images to build train and valid dataset pipelines.
+In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data. By using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize(standard scaler) your images to build train and valid dataset pipelines.
 More information about [calculating **mean** and **std** in PyTorch](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
 
 > Remember to pass dataloader object into those methods.
 
-```code
+```python
 mean, std = CalMeanStd0(training_dataloader)
 ```
 
 or
 
-```code
+```python
 mean, std = CalMeanStd1(training_dataloader)
 ```
 
