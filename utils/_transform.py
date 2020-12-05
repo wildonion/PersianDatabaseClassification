@@ -29,7 +29,7 @@ class Normalize: # standardize
 		self.mean = mean
 		self.std = std
 
-	def __call__(self, image):
+	def __call__(self, image): # image size : (C, H, W)
 		for t, m, s in zip(image, self.mean, self.std):
 			t = t.float().div(255)
 			t.sub_(m).div_(s) # image = (image - mean) / std
