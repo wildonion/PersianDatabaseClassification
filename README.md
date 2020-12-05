@@ -44,9 +44,36 @@ python classifier.py --pre-trained-model path/to/cnn.pth
 
 #### Preprocessing
 
-#### calculating std and mean for dataset
+Both models are trained on CSV files which are the numpy arrays of dataset images and their associated labels of **Persian Database** dataset. If you want to preprocess images of another dataset from scratch just run `_img_to_csv.py` script inside `utils` folder to resize them and store their numpy arrays in to their CSV files.
 
-#### building dataset and dataloader
+```console
+python utils/_img_to_csv.py --path /path/to/dataset --image-size 64
+``` 
+
+> After finishing preprocessing script move all CSV files from `utils` folder to `dataset` folder.
+
+#### calculating std and mean of your dataset
+
+In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data, by using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize your images to build train and valid dataset pipelines.
+More information about [calculating **mean** and **std** in PyTorch](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
+
+> Remember to pass dataloader object into those methods.
+
+```code
+mean, std = CalMeanStd0(training_dataloader)
+```
+
+or
+
+```code
+mean, std = CalMeanStd1(training_dataloader)
+```
+
+> `classifier.py` script do this automatically for CSV files dataset
+
+#### building pipelines and dataloaders
+
+The dataset pipelines of training and valid data will normalize all images using calculated **mean** and **std** and convert them into PyTorch tensor. Finally we pass pipelines through dataloader object to prepare them for training and evaluating.
 
 #### training and evaluating on selected model
 
