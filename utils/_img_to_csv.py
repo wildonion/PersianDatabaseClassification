@@ -1,18 +1,60 @@
 
 
 
+# USAGE : python _img_to_csv.py --path /path/to/dataset --image-size 64
+
+import os, sys, numpy as np
+from PIL import Image
+import pandas as pd
+import argparse
 
 
-# https://www.geeksforgeeks.org/how-to-convert-an-image-to-numpy-array-and-saveit-to-csv-file-using-python/
+parser = argparse.ArgumentParser(description='Image 2 CSV')
+parser.add_argument('--path', action='store', type=str, help='Path to dataset')
+parser.add_argument('--image-size', action='store', type=int, help='Image size to reduce')
+args = parser.parse_args()
 
-import os, sys
+assert(60<=args.image_size<=90), "❌ Image Size Must Be Between =60 and =90 pixels"
 
-images_path = sys.argv[1]
+if not os.path.exists(args.path): print("[❌] No Dataset Found!"); sys.exit(1)
 
 
-if not os.path.exists(images_path): print("[?] No Such Path!"); sys.exit(1)
-# step-1) resize image to 64X64 pixel
-# step-2) turn to grayscale
-# step-2) convert each into numpy array
-# step-3) save all arrays into csv file
-# step-4) save into train_x.csv, train_y.csv, test_x.csv and test_y.csv 
+dataset = {}
+dataset["train_x"] = []
+dataset["train_y"] = []
+dataset["test_x"] = []
+dataset["test_y"] = []
+
+
+for dirpath, dirnames, files in os.walk(args.path):
+	for filename in files:
+		path = os.path.join(dirpath, filename)
+		image = Image.open(path)
+		image = image.resize((args.image_size, args.image_size)).convert('L')
+		image = np.asarray(image)
+		if dirpath[-13:-8] == "Train":
+			print(f"✅ putting {filename} on training set with label {dirpath[-1]}")
+			dataset["train_x"].append(image)
+			dataset["train_y"].append([int(dirpath[-1])])
+		elif dirpath[-12:-8] == "Test":
+			print(f"✅ putting {filename} on testing set with label {dirpath[-1]}")
+			dataset["test_x"].append(image)
+			dataset["test_y"].append([int(dirpath[-1])])
+		else:
+			continue
+
+
+dataset["train_x"] = np.asarray(dataset["train_x"]).reshape(-1, args.image_size*args.image_size)
+dataset["train_y"] = np.asarray(dataset["train_y"])
+dataset["test_x"] = np.asarray(dataset["test_x"]).reshape(-1, args.image_size*args.image_size)
+dataset["test_y"] = np.asarray(dataset["test_y"])
+np.random.shuffle(dataset["train_x"])
+np.random.shuffle(dataset["train_y"])
+np.random.shuffle(dataset["test_x"])
+np.random.shuffle(dataset["test_y"])
+
+
+pd.DataFrame(dataset["train_x"]).to_csv("train_x.csv", header=None, index=None)
+pd.DataFrame(dataset["train_y"]).to_csv("train_y.csv", header=None, index=None)
+pd.DataFrame(dataset["test_x"]).to_csv("test_x.csv", header=None, index=None)
+pd.DataFrame(dataset["test_y"]).to_csv("test_y.csv", header=None, index=None)
