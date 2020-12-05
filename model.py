@@ -120,16 +120,21 @@ class MLP(nn.Module):
 
 class CNN(nn.Module):
 	"""
-		image batch size : (batch, C, H, W) 
+		image batch size : (batch, C, H, W)
+
+		Example:
+		>>> c1 = nn.Conv2d(3, 32, 5, 2, 1) # 3 input channels, 32 output channels, 5 kernel size, 2 is stride and 1 is padding 
+		>>> c1.weight.shape
+		torch.Size([32, 3, 5, 5]) # creates 32 filters each of with size 3X5X5
 	"""
 	def __init__(self, input_channels, output_neurons):
 		super(CNN, self).__init__()
-		self.conv1     = nn.Conv2d(input_channels, 16, kernel_size=5, stride=2) 
-		self.conv2     = nn.Conv2d(16, 32, kernel_size=5, stride=2)
+		self.conv1     = nn.Conv2d(input_channels, 16, kernel_size=5, stride=2, padding=1) # outout image size is half of the input image size 
+		self.conv2     = nn.Conv2d(16, 32, kernel_size=5, stride=2, padding=1) # outout image size is half of the input image size
 
 
 		"""
-		C * H * W is the number of input neurons for fc1 layer which is the flattened batch image
+		C * H * W is the number of input neurons for fc1 layer which is the flattened image batch
 		https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
 		"""
 		input_neurons_for_fc1 = self.conv2.shape[1]*self.conv2.shape[2]*self.conv2.shape[3]
