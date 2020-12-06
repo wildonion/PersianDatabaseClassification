@@ -70,5 +70,5 @@ def TrainEvalCNN(model, loader, optimizer):
 
 
 
-def PlotStat():
+def PlotStat(history):
 	pass
