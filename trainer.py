@@ -14,16 +14,11 @@
 | Feature Selection and Dimensionality Reduction using Genetic Algorithm For Breast Cancer Dataset
 |-------------------------------------------------------------------------------------------------
 |
+|
+|
+|
 | USAGE : _______training_______ 
-|			python classifier.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
-|
-|
-| USAGE : _______predicting using mlp model_______
-|			python classifier.py --pre-trained-model path/to/mlp.pth
-|
-| 
-| USAGE : _______predicting using cnn model_______
-| 			python classifier.py --pre-trained-model path/to/cnn.pth
+|			python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
 |
 |
 |
@@ -31,6 +26,7 @@
 
 
 '''
+
 
 
 import time
@@ -50,14 +46,13 @@ from model import CNN, MLP
 
 # ------------ argument options
 # ------------------------------
-parser = argparse.ArgumentParser(description='Classification of Persian Alphabet')
-parser.add_argument('--network', action='store', type=str, help='MLP or CNN', default="mlp")
-parser.add_argument('--batch-size', action='store', type=int, help='The number of batch size', default="32")
-parser.add_argument('--num-workers', action='store', type=int, help='The number of workers for dataloader object', default=4)
-parser.add_argument('--epoch', action='store', type=int, help='The number of epochs', default=200)
-parser.add_argument('--learning-rate', action='store', type=float, help='Learning rate value', default=0.01)
-parser.add_argument('--pre-trained-model', action='store', type=str, help='Path to pre-trained model')
-parser.add_argument('--device', action='store', type=str, help='The device to attach the torch to', default="cpu")
+parser = argparse.ArgumentParser(description='Persian Database Classification Trainer')
+parser.add_argument('--network', action='store', type=str, help='MLP or CNN', required=True)
+parser.add_argument('--batch-size', action='store', type=int, help='The number of batch size', required=True)
+parser.add_argument('--num-workers', action='store', type=int, help='The number of workers for dataloader object', required=True)
+parser.add_argument('--epoch', action='store', type=int, help='The number of epochs', required=True)
+parser.add_argument('--learning-rate', action='store', type=float, help='Learning rate value', required=True)
+parser.add_argument('--device', action='store', type=str, help='The device to attach the torch to', required=True)
 args = parser.parse_args()
 
 
@@ -91,26 +86,11 @@ def get_sample(dataloader):
 
 
 
-# ------------ load pre-trained model for predictions 
+# ------------ check path for pre-trained models
 # --------------------------------------------------------
-if args.pre_trained_model and os.path.exists(args.pre_trained_model):
-	print(f"\n‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗found existing pre-trained model, start testing‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗‗\n")
-	try:
-		checkpoint = torch.load(args.pre_trained_model)
-		print(f"\t✅ loaded pre-trained model from {args.pre_trained_model}\n")
-	except IOError:
-		print(f"\t❌ can't load pre-trained model from : {args.pre_trained_model}\n")
-
-	if args.pre_trained_model.split("/")[1][:-3] == "mlp":
-		# TODO - load mlp model
-		# start testing using mlp model
-		# remember to greyscale input image and resize them to between 60 and 90 pixels
-		pass
-	elif args.pre_trained_model.split("/")[1][:-3] == "cnn":
-		# TODO - load cnn model
-		# start testing using cnn model
-		# remember to greyscale input image and resize them to between 60 and 90 pixels
-		pass
+if os.path.exists('utils/cnn.pth') or os.path.exists('utils/mlp.pth'):
+	print("\t✅ found existing pre-trained models, start bot.py server for prediction\n")
+	sys.exit(1)
 
 
 
@@ -161,7 +141,7 @@ else:
 	# --------------------- building dataloader objects
 	# 						---------------------------
 	# 
-	print(f"\t✅ building dataloader objects from training and valid data pipeline\n")
+	print(f"\t✅ building dataloader objects from training and valid data pipelines\n")
 	# -----------------------------------------------------	
 	train_iter = DataLoader(training_transformed, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 	valid_iter  = DataLoader(valid_transformed, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
@@ -169,9 +149,9 @@ else:
 	
 
 	
-	# 						--------------
-	# --------------------- getting sample
-	#						-------------- 
+	# 						-----------------
+	# --------------------- plotting a sample
+	#						-----------------
 	# 
 	print(f"\t✅ plotting a sample from training dataloader object\n")
 	# ---------------------------------------------
@@ -209,13 +189,34 @@ else:
 	print(f"\t✅ start training and evaluating process\n")
 	# -----------------------------------------------------------
 	start_time = time.time()
-	
+	history = {"train_loss": [], "valid_loss": [], "train_acc": [], "valid_acc": []}
+
 	if optimizer:
 		for e in range(args.epoch):
-			train_loss, train_acc, val_loss, val_acc = TrainEvalCNN(net.to(device), train_iter, optimizer=optimizer)	
+			train_loss, train_acc, val_loss, val_acc = TrainEvalCNN(net.to(device), train_iter, optimizer=optimizer)
+			history["train_loss"].append(train_loss)
+			history["train_acc"].append(train_loss)
+			history["valid_loss"].append(train_loss)
+			history["valid_acc"].append(train_loss)
 	else:
 		for e in range(args.epoch):
 			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), train_iter)
+			history["train_loss"].append(train_loss)
+			history["train_acc"].append(train_loss)
+			history["valid_loss"].append(train_loss)
+			history["valid_acc"].append(train_loss)
 	
 	end_time = time.time()
 	total_time = end_time - start_time
+
+
+
+
+	# 						----------------------------
+	# --------------------- plotting statistical results
+	# 						----------------------------
+	# 
+	print(f"\t⌛ finished training and evaluating process in {total_time} ms\n")
+	print(f"\t📊 plotting history\n")
+	# -----------------------------------------------------------
+	PlotStat(history)
