@@ -125,7 +125,7 @@ class CNN(nn.Module):
 		Example:
 		>>> c1 = nn.Conv2d(3, 32, 5, 2, 1) # 3 input channels, 32 output channels, 5 kernel size, 2 is stride and 1 is padding 
 		>>> c1.weight.shape
-		torch.Size([32, 3, 5, 5]) # creates 32 filters each of with size 3X5X5
+		torch.Size([32, 3, 5, 5]) # creates 32 random filters each of with size 3X5X5
 	"""
 	def __init__(self, input_channels, output_neurons):
 		super(CNN, self).__init__()
