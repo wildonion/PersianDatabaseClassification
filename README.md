@@ -12,13 +12,13 @@ If you have any question, please feel free to contact me.
 
 To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 
-## Performance
+## 📝 Performance
 
-MLP:
+✅ MLP:
 
-CNN:
+✅ CNN:
 
-## Setup
+## ⚙️ Setup
 
 * Create an environment: ```conda create -n uniXerr```
 * Create the environment using the _scai.yml_ file: ```conda env create -f scai.yml```
@@ -26,43 +26,50 @@ CNN:
 * Update the environment using _scai.yml_ file: ```conda env update -f scai.yml --prune```
 * Export your active environment to _scai.yml_ file: ```conda env export | grep -v "^prefix: " > scai.yml```
 
-## Usage
-
-> Run for training on selected model
+Or 
 
 ```console
-python classifier.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
+pip install uvloop matplotlib numpy pandas Pillow aiohttp[speedups] ujson torch torchvision
+
+
 ```
 
-> Run for prediction using mlp model  
+Then
 
 ```console
-python classifier.py --pre-trained-model path/to/mlp.pth
+npm install pm2@latest -g
 ```
 
-> Run for prediction using cnn model
+Finally extract [`images.tar.xz`](https://drive.google.com/file/d/1mHBjJSh7riEo2cxQxFTLkaeVQlusoLYm/view?usp=sharing) inside `dataset` folder.
+
+## 💻 Usage
+
+Run `trainer.py` for training selected model.
 
 ```console
-python classifier.py --pre-trained-model path/to/cnn.pth
+python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
 ```
 
+After finishing the training process run `bot.py` 🤖 server for prediction using Telegram-bot APIs.  
 
-## Procedures
+```console
+pm2 start bot.py
+```
 
-#### Preprocessing
+## 📋 Procedures
 
-Both models are trained on CSV files which are the numpy arrays of dataset images and their associated labels of **Persian Database** dataset. If you want to preprocess images of another dataset from scratch just run `_img_to_csv.py` script inside `utils` folder to resize them and store their numpy arrays in to their CSV files.
+#### 📌 Preprocessing
+
+Both models are trained on CSV files which are the numpy arrays of dataset images and their associated labels of **Persian Database** dataset. If you want to preprocess images of another dataset from scratch just run `_img_to_csv.py` script inside `utils` folder to resize them and store their numpy arrays in to their related CSV files.
 
 ```console
 python utils/_img_to_csv.py --path /path/to/dataset --image-size 64
-``` 
+```
 
-> After finishing preprocessing script move all CSV files from `utils` folder to `dataset` folder.
-
-#### calculating std and mean of your dataset
+#### 📌 calculating std and mean of your dataset
 
 In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data. By using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize(standard scaler) your images to build train and valid dataset pipelines.
-More information about [calculating **mean** and **std** in PyTorch](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
+More information about [calculating **mean** and **std** in **PyTorch**](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
 
 > Remember to pass dataloader object into those methods.
 
@@ -76,12 +83,16 @@ or
 mean, std = CalMeanStd1(training_dataloader)
 ```
 
-> `classifier.py` script do this automatically for CSV files dataset
+> `trainer.py` script do this automatically for CSV files dataset 🙂
 
-#### building pipelines and dataloaders
+#### 📌 building pipelines and dataloaders
 
-The dataset pipelines of training and valid data will normalize all images using calculated **mean** and **std** and convert them into PyTorch tensor. Finally we pass pipelines through dataloader object to prepare them for training and evaluating.
+The dataset pipelines of training and valid data will normalize all images using calculated **mean** and **std** and convert them into **PyTorch** tensor. Finally we pass pipelines through dataloader object to prepare them for training and evaluating.
 
-#### training and evaluating on selected model
+#### 📌 training and evaluating on selected model
 
-#### prediction
+> 📊 Plotted history
+
+#### 📌 prediction
+
+> Start predicting 🔮 with [pdc bot](http://t.me/pdc_pytorch_bot) 😎✌️
