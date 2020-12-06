@@ -28,6 +28,8 @@ dataset["test_y"] = []
 
 for dirpath, dirnames, files in os.walk(args.path):
 	for filename in files:
+		if filename[-2:] == "db":
+			continue
 		path = os.path.join(dirpath, filename)
 		image = Image.open(path)
 		image = image.resize((args.image_size, args.image_size)).convert('L')
@@ -54,7 +56,10 @@ np.random.shuffle(dataset["test_x"])
 np.random.shuffle(dataset["test_y"])
 
 
-pd.DataFrame(dataset["train_x"]).to_csv("train_x.csv", header=None, index=None)
-pd.DataFrame(dataset["train_y"]).to_csv("train_y.csv", header=None, index=None)
-pd.DataFrame(dataset["test_x"]).to_csv("test_x.csv", header=None, index=None)
-pd.DataFrame(dataset["test_y"]).to_csv("test_y.csv", header=None, index=None)
+curr_dir = os.path.dirname(os.path.abspath(__file__))
+csv_path = os.path.abspath(curr_dir + "/../dataset")
+
+pd.DataFrame(dataset["train_x"]).to_csv(f"{csv_path}/train_x.csv", header=None, index=None)
+pd.DataFrame(dataset["train_y"]).to_csv(f"{csv_path}/train_y.csv", header=None, index=None)
+pd.DataFrame(dataset["test_x"]).to_csv(f"{csv_path}/test_x.csv", header=None, index=None)
+pd.DataFrame(dataset["test_y"]).to_csv(f"{csv_path}/test_y.csv", header=None, index=None)
