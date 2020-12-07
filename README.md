@@ -91,6 +91,10 @@ The dataset pipelines of training and valid data will normalize all images using
 
 #### 📌 training and evaluating on selected model
 
+I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`](https://github.com/wildonion/PersianDatabaseClassification/blob/0cf5ae8d30a52f9236cbfa0f387c2b7109e90b3f/model.py#L44) function.
+
+For the CNN model I used the built in `backward` method in **PyTorch** of the loss function. It'll automatically calculate the weights using computational graph and update them, so you can access the derivative of each weights' tensor using `.grad` attribute.
+
 > 📊 Plotted history
 
 #### 📌 prediction
