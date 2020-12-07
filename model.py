@@ -19,9 +19,9 @@ class MLP(nn.Module):
 		super(MLP, self).__init__()
 		self.learning_rate = learning_rate
 
-		self.input_to_h1  = nn.Linear(input_neurons, 512) # flattened image to 512 neurons in first hidden layer
-		self.h1_to_h2     = nn.Linear(512, 256) # 512 neurons in first hidden to 256 neurons in second hidden layer 
-		self.h2_to_output = nn.Linear(256, output_neurons) # 256 neurons in second hidden to "n" neurons in output layer
+		self.input_to_h1  = nn.Linear(input_neurons, 512) # flattened image to 512 neurons in first hidden layer - weight shape : (512 X input_neurons)
+		self.h1_to_h2     = nn.Linear(512, 256) # 512 neurons in first hidden to 256 neurons in second hidden layer - weight shape : (256 X 512)
+		self.h2_to_output = nn.Linear(256, output_neurons) # 256 neurons in second hidden to "n" neurons in output layer - weight shape : (output_neurons X 256)
 		self.relu         = nn.ReLU()
 
 
@@ -45,6 +45,7 @@ class MLP(nn.Module):
 		"""
 								=============================
 								  COMPUTING GRADIENT FOR w3
+								  	   BATCH SIZE : 32
 								=============================
 
 			dC/dw3 = dC/dy5 * dy5/dw3  => derivative of loss w.r.t w3
@@ -53,46 +54,51 @@ class MLP(nn.Module):
 
 		"""
 
-		self.dC_dy5   = y5 - actual # output - actual => derivative of loss w.r.t output
-		self.dy5_dw3  = self.y4
-		self.dC_w3    = torch.matmul(torch.t(self.dy5_dw3), self.dC_dy5)
-
+		self.dC_dy5   = y5 - actual # output - actual => derivative of loss w.r.t output - size : (32 X output_neurons)
+		self.dy5_dw3  = self.y4 # size : (32 X 256)
+		self.dC_w3    = torch.matmul(torch.t(self.dy5_dw3.float()), self.dC_dy5.float()) # size : (32 X 256).transpose * (32 X output_neurons) = (256 X 32) * (32 X output_neurons) = (256 X output_neurons)
 
 		"""
 								=============================
 								  COMPUTING GRADIENT FOR w2
+								  	   BATCH SIZE : 32
 								=============================
 
 			dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dw2 => derivative of loss w.r.t w2
 
-			NOTE : we have to transpose y2 and w2 matrices in order to do the multiplication process
+			NOTE : we have to transpose y2 matrix in order to do the multiplication process
+			NOTE : we don't need to transpose w3 because pytorch initiate the weights in this manner - weight size : (output X input)
 
 		"""
 
-		self.dy5_dy4  = self.h2_to_output.weight # w2
-		self.dy4_dy3  = self.relu_prime(self.y4) # dy4/dy3 = relu'(y4) because relu(y3) = y4 then relu'(relu(y3)) = relu'(y4) 
-		self.dy3_dw2  = self.y2
-		self.y5_delta = torch.matmul(self.dC_dy5, torch.t(self.dy5_dy4)) * self.dy4_dy3
-		self.dC_dw2   = torch.matmul(self.y5_delta, torch.t(self.dy3_w2))
+		self.dy5_dy4  = self.h2_to_output.weight # w3 - size : (output_neurons X 256) -> this is the transpose size of w3
+		self.dy4_dy3  = self.relu_prime(self.y4) # dy4/dy3 = relu'(y4) because relu(y3) = y4 then relu'(relu(y3)) = relu'(y4) - size : (32 X 256)
+		self.dy3_dw2  = self.y2 # size : (32 X 512)
+		self.y3_delta = torch.matmul(torch.t(self.dy4_dy3.float()), self.dy3_dw2.float()) # size : (32 X 256).transpose * (32 X 512) = (256 X 32) * (32 X 512) = (256 X 512)
+		self.y5_delta = torch.matmul(self.dC_dy5.float(), self.dy5_dy4.float()) # size : (32 X output_neurons) * (output_neurons X 256) = (32 X 256)
+		self.dC_dw2   = torch.matmul(self.y5_delta, self.y3_delta) # size : (32 X 256) * (256 X 512) = (32 X 512)
 
 		
 		"""
 								=============================
 								  COMPUTING GRADIENT FOR w1
+									   BATCH SIZE : 32
 								=============================
 
-			dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of loss w.r.t w1
+			dC/dw1 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of loss w.r.t w1
 			
-			NOTE : we have to transpose batch and w1 matrices in order to do the multiplication process
+			NOTE : we have to transpose batch matrix in order to do the multiplication process
+			NOTE : we don't need to transpose w2 because pytorch initiate the weights in this manner - weight size : (output X input)
 
 		"""
 
-		self.dy3_dy2  = self.h1_to_h2.weight # w1
-		self.dy2_dy1  = self.relu_prime(y2) # dy2/dy1 = relu'(y2) because relu(y1) = y2 then relu'(relu(y1)) = relu'(y2) 
-		self.y2_delta = torch.matmul(torch.t(self.dy3_dy2), self.y5_delta) * self.dy2_dy1
+		self.dy3_dy2  = self.h1_to_h2.weight # w2 - size : (256 X 512) -> this is the transpose size of w2
+		self.dy2_dy1  = self.relu_prime(self.y2) # dy2/dy1 = relu'(y2) because relu(y1) = y2 then relu'(relu(y1)) = relu'(y2) - size : (32 X 512)
 		self.dy1_dw1  = batch
-		self.dC_w1    = torch.matmul(self.y2_delta, torch.t(self.dy1_dw1))
 
+		self.y3_delta = torch.matmul(self.dy4_dy3.float(), self.dy3_dy2.float()) # size : (32 X 256) * (256 X 512) = (32 X 512) 
+		self.y1_delta = torch.matmul(torch.t(self.dy2_dy1.float()), self.dy1_dw1.float()) # size : (32 X 512).transpose * (32 X input_neurons) = (512 X 32) * (32 X input_neurons) = (512 X input_neurons)
+		self.dC_w1    = torch.matmul(torch.matmul(torch.t(self.y5_delta), self.y3_delta), self.y1_delta) # size : (32 X 256).transpose * (32 X 512) = (256 X 32) * (32 X 512) = (256 X 512) * (512 X input_neurons) = (256 X input_neurons)
 
 		"""
 									=======================
@@ -105,10 +111,10 @@ class MLP(nn.Module):
 			w3 = w3 - lr*dC/dw3
 
 		"""
-		
-		self.input_to_h1.weight     -= self.learning_rate * self.dC_w1
-		self.h1_to_h2.weight        -= self.learning_rate * self.dC_w2
-		self.h2_to_output.weight    -= self.learning_rate * self.dC_w3
+		with torch.no_grad():
+			self.input_to_h1.weight  -= self.learning_rate * self.dC_w1
+			self.h1_to_h2.weight     -= self.learning_rate * self.dC_w2
+			self.h2_to_output.weight -= self.learning_rate * self.dC_w3
 
 
 	def train(self, x, y):
