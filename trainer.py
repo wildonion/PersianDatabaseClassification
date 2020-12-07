@@ -29,6 +29,7 @@
 
 
 
+import operator
 import time
 import os, sys
 import argparse
@@ -188,19 +189,20 @@ else:
 	# 
 	print(f"\t✅ start training and evaluating process\n")
 	# -----------------------------------------------------------
+	criterion = torch.nn.CrossEntropyLoss()
 	start_time = time.time()
 	history = {"train_loss": [], "valid_loss": [], "train_acc": [], "valid_acc": []}
 
 	if optimizer:
 		for e in range(args.epoch):
-			train_loss, train_acc, val_loss, val_acc = TrainEvalCNN(net.to(device), train_iter, optimizer=optimizer)
+			train_loss, train_acc, val_loss, val_acc = TrainEvalCNN(net.to(device), device, e, train_iter, valid_iter, optimizer=optimizer, criterion=criterion)
 			history["train_loss"].append(train_loss)
 			history["train_acc"].append(train_loss)
 			history["valid_loss"].append(train_loss)
 			history["valid_acc"].append(train_loss)
 	else:
 		for e in range(args.epoch):
-			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), train_iter)
+			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), device, e, train_iter, valid_iter, criterion=criterion)
 			history["train_loss"].append(train_loss)
 			history["train_acc"].append(train_loss)
 			history["valid_loss"].append(train_loss)
@@ -208,6 +210,10 @@ else:
 	
 	end_time = time.time()
 	total_time = end_time - start_time
+	index_ta, value_ta = max(enumerate(history["train_acc"]), key=operator.itemgetter(1))
+	index_va, value_va = max(enumerate(history["valid_acc"]), key=operator.itemgetter(1))
+	print("➲ Best training accuracy was {} at epoch {}".format(value_ta, index_ta+1))
+	print("➲ Best valid accuracy was {} at epoch {}".format(value_va, index_va+1))
 
 
 
