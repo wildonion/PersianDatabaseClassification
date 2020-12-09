@@ -40,11 +40,11 @@ Then
 npm install pm2@latest -g
 ```
 
-Finally extract [`images.tar.xz`](https://drive.google.com/file/d/1mHBjJSh7riEo2cxQxFTLkaeVQlusoLYm/view?usp=sharing) inside `dataset` folder.
+Finally extract [`images.tar.xz`]() inside `dataset` folder.
 
 ## 💻 Usage
 
-Run `trainer.py` for training selected model.
+Run `trainer.py` for training selected model:
 
 ```console
 python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
@@ -91,11 +91,13 @@ The dataset pipelines of training and valid data will normalize all images using
 
 #### 📌 training and evaluating on selected model
 
-I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`](https://github.com/wildonion/PersianDatabaseClassification/blob/0cf5ae8d30a52f9236cbfa0f387c2b7109e90b3f/model.py#L44) function.
+I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`](https://github.com/wildonion/PersianDatabaseClassification/blob/0cf5ae8d30a52f9236cbfa0f387c2b7109e90b3f/model.py#L60) function.
 
 For the CNN model I used the built in `backward` method in **PyTorch** of the loss function. It'll automatically calculate the weights using computational graph and update them, so you can access the derivative of each weights' tensor using `.grad` attribute.
 
-> 📊 Plotted history
+> 📊 MLP Plotted history
+
+> 📊 CNN Plotted history
 
 #### 📌 prediction
 
