@@ -7,7 +7,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-__all__ = ['NetMLP', 'NetCNN']
+__all__ = ['MLP', 'CNN']
 
 class MLP(nn.Module):
 	def __init__(self, input_neurons, output_neurons, learning_rate):
@@ -19,10 +19,10 @@ class MLP(nn.Module):
 		super(MLP, self).__init__()
 		self.learning_rate = learning_rate
 
-		self.input_to_h1  = nn.Linear(input_neurons, 512) # flattened image to 512 neurons in first hidden layer - weight shape : (512 X input_neurons)
-		self.h1_to_h2     = nn.Linear(512, 256) # 512 neurons in first hidden to 256 neurons in second hidden layer - weight shape : (256 X 512)
-		self.h2_to_output = nn.Linear(256, output_neurons) # 256 neurons in second hidden to "n" neurons in output layer - weight shape : (output_neurons X 256)
-		self.relu         = nn.ReLU()
+		self.fc1  = nn.Linear(input_neurons, 512) # flattened image to 512 neurons in first hidden layer - weight shape : (512 X input_neurons)
+		self.fc2  = nn.Linear(512, 256) # 512 neurons in first hidden to 256 neurons in second hidden layer - weight shape : (256 X 512)
+		self.fc3  = nn.Linear(256, output_neurons) # 256 neurons in second hidden to "n" neurons in output layer - weight shape : (output_neurons X 256)
+		self.relu = nn.ReLU()
 
 
 	def relu_prime(self, y):
@@ -33,12 +33,28 @@ class MLP(nn.Module):
 
 
 	def forward(self, batch):
-		self.y1 = self.input_to_h1(batch) # y1 = batch * w1
+		"""
+			pytorch multiply inputs by the transpose of initialized weights in order to do the multiplication process correctly
+			because the initialized weights are the transpose of actual weights means their size are (output_neurons X input_neurons)
+			in order to do the multiplication process correctly between inputs and weights we have to transpose
+			the weights to (input_neurons X output_neurons) and pytorch do this automatically in forwarding process.
+
+
+			we can't apply relu on last layer(except hidden layers) with any loss functions because of its derivative nature problem:
+				https://stats.stackexchange.com/questions/166595/how-to-apply-cross-entropy-on-rectified-linear-units
+
+			we shouldn't apply softmax on last layer when we're using cross entropy loss because the loss itself apply softmax on the logits:
+				https://discuss.pytorch.org/t/multi-class-cross-entropy-loss-and-softmax-in-pytorch/24920/3
+
+		"""
+
+		self.y1 = self.fc1(batch) # y1 = batch * w1.T
 		self.y2 = F.dropout(self.relu(self.y1), p=0.5, training=self.training) # y2 = relu(y1) - active only on training
-		self.y3 = self.h1_to_h2(self.y2) # y3 = y2 * w2
+		self.y3 = self.fc2(self.y2) # y3 = y2 * w2.T
 		self.y4 = F.dropout(self.relu(self.y3), p=0.5, training=self.training) # y4 = relu(y3) - active only on training
-		self.y5 = self.h2_to_output(self.y4) # y5 = y4 * w3
+		self.y5 = self.fc3(self.y4) # y5 = y4 * w3.T
 		return self.y5
+
 
 
 	def backward(self, batch, y5, actual):
@@ -48,15 +64,16 @@ class MLP(nn.Module):
 								  	   BATCH SIZE : 32
 								=============================
 
-			dC/dw3 = dC/dy5 * dy5/dw3  => derivative of loss w.r.t w3
+			dC/dw3 = dC/dy5 * dy5/dw3  => derivative of cross entropy loss w.r.t w3
 
-			NOTE : we have to transpose y4 matrix in order to do the multiplication process
+		⚠️ derivative of CE loss w.r.t output passed from a softmax layer is logits - labels:
+				https://www.adeveloperdiary.com/data-science/deep-learning/neural-network-with-softmax-in-python/
 
 		"""
 
-		self.dC_dy5   = y5 - actual # output - actual => derivative of loss w.r.t output - size : (32 X output_neurons)
+		self.dC_dy5   = y5 - actual # output - actual => derivative of cross entropy loss w.r.t output - size : (32 X output_neurons)
 		self.dy5_dw3  = self.y4 # size : (32 X 256)
-		self.dC_w3    = torch.matmul(torch.t(self.dy5_dw3.float()), self.dC_dy5.float()) # size : (32 X 256).transpose * (32 X output_neurons) = (256 X 32) * (32 X output_neurons) = (256 X output_neurons)
+		self.dC_w3    = torch.matmul(torch.t(self.dC_dy5.float()), self.dy5_dw3.float()) # size : (32 X output_neurons).transpose * (32 X 256) = (output_neurons X 32) * (32 X 256) = (output_neurons X 256) -> w3 size
 
 		"""
 								=============================
@@ -64,41 +81,34 @@ class MLP(nn.Module):
 								  	   BATCH SIZE : 32
 								=============================
 
-			dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dw2 => derivative of loss w.r.t w2
-
-			NOTE : we have to transpose y2 matrix in order to do the multiplication process
-			NOTE : we don't need to transpose w3 because pytorch initiate the weights in this manner - weight size : (output X input)
+			dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dw2 => derivative of cross entropy loss w.r.t w2
 
 		"""
 
-		self.dy5_dy4  = self.h2_to_output.weight # w3 - size : (output_neurons X 256) -> this is the transpose size of w3
+		self.dy5_dy4  = self.fc3.weight # w3 - size : (output_neurons X 256) -> this is the transpose size of actual w3 size
+		self.y5_delta = torch.matmul(self.dC_dy5.float(), self.dy5_dy4.float()) # size : (32 X output_neurons) * (output_neurons X 256) = (32 X 256)
 		self.dy4_dy3  = self.relu_prime(self.y4) # dy4/dy3 = relu'(y4) because relu(y3) = y4 then relu'(relu(y3)) = relu'(y4) - size : (32 X 256)
 		self.dy3_dw2  = self.y2 # size : (32 X 512)
-		self.y3_delta = torch.matmul(torch.t(self.dy4_dy3.float()), self.dy3_dw2.float()) # size : (32 X 256).transpose * (32 X 512) = (256 X 32) * (32 X 512) = (256 X 512)
-		self.y5_delta = torch.matmul(self.dC_dy5.float(), self.dy5_dy4.float()) # size : (32 X output_neurons) * (output_neurons X 256) = (32 X 256)
-		self.dC_dw2   = torch.matmul(self.y5_delta, self.y3_delta) # size : (32 X 256) * (256 X 512) = (32 X 512)
+		self.y3_delta = torch.matmul(torch.t(self.dy3_dw2.float()), self.dy4_dy3.float()) # size : (32 X 512).transpose * (32 X 256) = (512 X 32) * (32 X 256) = (512 X 256)
+		self.dC_dw2   = torch.matmul(self.y5_delta, torch.t(self.y3_delta)) # size : (32 X 256) * (512 X 256).transpose = (32 X 256) * (256 X 512) = (32 X 512) -> w2 size
 
-		
 		"""
 								=============================
 								  COMPUTING GRADIENT FOR w1
 									   BATCH SIZE : 32
 								=============================
 
-			dC/dw1 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of loss w.r.t w1
-			
-			NOTE : we have to transpose batch matrix in order to do the multiplication process
-			NOTE : we don't need to transpose w2 because pytorch initiate the weights in this manner - weight size : (output X input)
+			dC/dw1 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of cross entropy loss w.r.t w1
 
 		"""
 
-		self.dy3_dy2  = self.h1_to_h2.weight # w2 - size : (256 X 512) -> this is the transpose size of w2
+		self.dy3_dy2  = self.fc2.weight # w2 - size : (256 X 512) -> this is the transpose size of actual w2 size
 		self.dy2_dy1  = self.relu_prime(self.y2) # dy2/dy1 = relu'(y2) because relu(y1) = y2 then relu'(relu(y1)) = relu'(y2) - size : (32 X 512)
-		self.dy1_dw1  = batch
-
+		self.dy1_dw1  = batch # size : (32 X input_neurons)
 		self.y3_delta = torch.matmul(self.dy4_dy3.float(), self.dy3_dy2.float()) # size : (32 X 256) * (256 X 512) = (32 X 512) 
-		self.y1_delta = torch.matmul(torch.t(self.dy2_dy1.float()), self.dy1_dw1.float()) # size : (32 X 512).transpose * (32 X input_neurons) = (512 X 32) * (32 X input_neurons) = (512 X input_neurons)
-		self.dC_w1    = torch.matmul(torch.matmul(torch.t(self.y5_delta), self.y3_delta), self.y1_delta) # size : (32 X 256).transpose * (32 X 512) = (256 X 32) * (32 X 512) = (256 X 512) * (512 X input_neurons) = (256 X input_neurons)
+		self.y1_delta = torch.matmul(torch.t(self.dy1_dw1.float()), self.dy2_dy1.float()) # size : (32 X input_neurons).transpose * (32 X 512) = (input_neurons X 32) * (32 X 512) = (input_neurons X 512)
+		self.dC_w1    = torch.matmul(torch.t(self.y5_delta), self.y3_delta) # (32 X 256).transpose * (32 X 512) = (256 X 32) * (32 X 512) = (256 X 512)
+		self.dC_w1    = torch.matmul(self.dC_w1, torch.t(self.y1_delta)) # size : (256 X 512) * (input_neurons X 512).transpose = (32 X 512) * (512 X input_neurons) = (32 X input_neurons) -> w1 size
 
 		"""
 									=======================
@@ -112,9 +122,9 @@ class MLP(nn.Module):
 
 		"""
 		with torch.no_grad():
-			self.input_to_h1.weight  -= self.learning_rate * self.dC_w1
-			self.h1_to_h2.weight     -= self.learning_rate * self.dC_w2
-			self.h2_to_output.weight -= self.learning_rate * self.dC_w3
+			self.fc1.weight -= self.learning_rate * self.dC_w1 # size : (512 X input_neurons)
+			self.fc2.weight -= self.learning_rate * self.dC_w2 # size : (256 X 512)
+			self.fc3.weight -= self.learning_rate * self.dC_w3 # size : (output_neurons X 256)
 
 
 	def train(self, x, y):
