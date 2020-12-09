@@ -29,6 +29,7 @@
 
 
 
+import numpy as np
 import operator
 import time
 import os, sys
@@ -189,6 +190,7 @@ else:
 	# 
 	print(f"\t✅ start training and evaluating process\n")
 	# -----------------------------------------------------------
+	valid_loss_min = np.Inf
 	criterion = torch.nn.CrossEntropyLoss()
 	start_time = time.time()
 	history = {"train_loss": [], "valid_loss": [], "train_acc": [], "valid_acc": []}
@@ -200,6 +202,12 @@ else:
 			history["train_acc"].append(train_loss)
 			history["valid_loss"].append(train_loss)
 			history["valid_acc"].append(train_loss)
+			if valid_loss <= valid_loss_min:
+				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
+				print(f'\t📸 model snapshot saved')
+				torch.save(net.state_dict(), 'utils/mlp.pth')
+				valid_loss_min = val_loss
+
 	else:
 		for e in range(args.epoch):
 			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), device, e, train_iter, valid_iter, criterion=criterion)
