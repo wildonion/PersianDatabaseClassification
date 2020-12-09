@@ -16,33 +16,40 @@ def TrainEvalMLP(model, device, e, train_iter, valid_iter, criterion):
 	running_train_loss = 0.
 	for idx, sample in enumerate(train_iter): # len(train_iter) iterations
 		images, labels = sample
-		images = Variable(images.float().to(device)) # flatten the image
-		images = images.view(images.size(0), -1)
-		output = model(images)
-		winners = output.argmax(dim=1) # calculate the most prob of predictions, return images.size(0) indices of most prob positions in each row
+		images = Variable(images.float().to(device))
+		images = images.view(images.size(0), -1) # flatten the image
+		output = model(images) # feeding images to the model
+		winners = output.argmax(dim=1) # calculate the most prob of predictions, return images.size(0) indices of most prob chars in each row
 		labels_long_tensor = labels.nonzero(as_tuple=True) # all nonezero values with their coressponding indices
-		corrects = (winners == labels_long_tensor[1]) # list of corrects - labels_long_tensor[0] is batch indices and labels_long_tensor[1] is indices of nonzero value
+		corrects = (winners == labels_long_tensor[1]) # list of corrects - labels_long_tensor[0] is batch indices and labels_long_tensor[1] is indices of nonzero values
 		train_acc = 100*corrects.sum().float()/float(labels.size(0)) # the ratio of number of correct predictions to the total number of input samples
 		train_loss = criterion(output, labels.argmax(dim=1)) # calculate the loss between output and labels
 		running_train_loss += train_loss.item()
-		model.train(images, labels) # run backpropagation algorithm to tune the weights at the end of the iteration
-		if e % 20 == 0: # log every 20 epoch
-			print('\n\t[epoch ⇀  %d, sample ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_train_loss/20, train_acc/20))
+		model.train(images, labels) # run backpropagation algorithm to tune the weights at the end of the iteration - minibatch gradient
+		if idx % 20 == 0: # log every 20 mini-batch
+			print("[TRAINING LOG]")
+			print('\t☕️ [epoch ⇀  %d, sample/mini-batch ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_train_loss/20, train_acc))
 			running_train_loss = 0.
 	# ===============
 	# validating loop
 	# ===============
+	running_valid_loss = 0.
 	for idx, sample in enumerate(valid_iter): # len(valid_iter) iterations
 		images, labels = sample
-		images = Variable(images.float().to(device)) # flatten the image
-		images = Variable(images.to(device))
-		output = model(images)
-		winners = output.argmax(dim=1) # calculate the most prob of predictions, return images.size(0) indices of most prob positions in each row
+		images = Variable(images.float().to(device))
+		images = images.view(images.size(0), -1) # flatten the image
+		output = model(images) # feeding images to the model
+		winners = output.argmax(dim=1) # calculate the most prob of predictions, return images.size(0) indices of most prob chars in each row
 		labels_long_tensor = labels.nonzero(as_tuple=True) # all nonezero values with their coressponding indices
-		corrects = (winners == labels_long_tensor[1]) # list of corrects - labels_long_tensor[0] is batch indices and labels_long_tensor[1] is indices of nonzero value
-		train_acc = 100*corrects.sum().float()/float(labels.size(0)) # the ratio of number of correct predictions to the total number of input samples
-		train_loss = criterion(output, labels.argmax(dim=1)) # calculate the loss between output and labels
-	return train_loss, train_acc, valid_loss, val_acc # return loss and acc of both loaders at the end
+		corrects = (winners == labels_long_tensor[1]) # list of corrects - labels_long_tensor[0] is batch indices and labels_long_tensor[1] is indices of nonzero values
+		valid_acc = 100*corrects.sum().float()/float(labels.size(0)) # the ratio of number of correct predictions to the total number of input samples
+		valid_loss = criterion(output, labels.argmax(dim=1)) # calculate the loss between output and labels
+		if idx % 20 == 0: # log every 20 mini-batch
+			print("\n[VALIDATING LOG]")
+			print('\t☕️ [epoch ⇀  %d, sample/mini-batch ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_train_loss/20, train_acc))
+			running_train_loss = 0.
+	# return the last loss and last acc of both loaders at the end of iteration in an epoch
+	return train_loss, train_acc, valid_loss, valid_acc
 
 
 
