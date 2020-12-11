@@ -34,14 +34,15 @@ for dirpath, dirnames, files in os.walk(args.path):
 		image = Image.open(path)
 		image = image.resize((args.image_size, args.image_size)).convert('L')
 		image = np.asarray(image)
+		label = int(dirpath[-1]) if dirpath[-2] == " " else int(dirpath[-2:])
 		if dirpath[-13:-8] == "Train":
-			print(f"✅ putting {filename} on training set with label {dirpath[-1]}")
+			print(f"✅ putting {filename} on training set with label {label}")
 			dataset["train_x"].append(image)
-			dataset["train_y"].append([int(dirpath[-1])])
+			dataset["train_y"].append([label])
 		elif dirpath[-12:-8] == "Test":
-			print(f"✅ putting {filename} on testing set with label {dirpath[-1]}")
+			print(f"✅ putting {filename} on testing set with label {label}")
 			dataset["test_x"].append(image)
-			dataset["test_y"].append([int(dirpath[-1])])
+			dataset["test_y"].append([label])
 		else:
 			continue
 
