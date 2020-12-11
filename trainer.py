@@ -215,6 +215,12 @@ else:
 			history["train_acc"].append(train_loss)
 			history["valid_loss"].append(train_loss)
 			history["valid_acc"].append(train_loss)
+			if valid_loss <= valid_loss_min:
+				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
+				print(f'\t📸 model snapshot saved')
+				torch.save(net.state_dict(), 'utils/cnn.pth')
+				valid_loss_min = val_loss
+	
 	
 	end_time = time.time()
 	total_time = end_time - start_time
