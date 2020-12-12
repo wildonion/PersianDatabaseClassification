@@ -12,7 +12,7 @@ __all__ = ['MLP', 'CNN']
 class MLP(nn.Module):
 	def __init__(self, input_neurons, output_neurons, learning_rate):
 		"""
-			reference : https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
+				⚠️ https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
 
 			image batch size : (batch, C, H, W) ---flattened---> (batch, C*H*W)
 		"""
@@ -41,10 +41,10 @@ class MLP(nn.Module):
 
 
 			we can't apply relu on last layer(except hidden layers) with any loss functions because of its derivative nature problem:
-				https://stats.stackexchange.com/questions/166595/how-to-apply-cross-entropy-on-rectified-linear-units
+				⚠️ https://stats.stackexchange.com/questions/166595/how-to-apply-cross-entropy-on-rectified-linear-units
 
 			we shouldn't apply softmax on last layer when we're using cross entropy loss because the loss itself apply softmax on the logits:
-				https://discuss.pytorch.org/t/multi-class-cross-entropy-loss-and-softmax-in-pytorch/24920/3
+				⚠️ https://discuss.pytorch.org/t/multi-class-cross-entropy-loss-and-softmax-in-pytorch/24920/3
 
 		"""
 
@@ -151,7 +151,7 @@ class CNN(nn.Module):
 
 		"""
 		C * H * W is the number of input neurons for fc1 layer which is the flattened image batch
-		https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
+		⚠️ https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
 		"""
 		input_neurons_for_fc1 = self.conv2.shape[1]*self.conv2.shape[2]*self.conv2.shape[3]
 
