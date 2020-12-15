@@ -21,7 +21,7 @@ class PersianAlphabetDataset(Dataset):
 		self.images = self.images.values.astype('float32')
 		self.labels = self.labels.values.astype('int32')-1 # 0 to len(self.labels) - 1
 		
-		labels_sequences = {number[0]: np.count_nonzero(self.labels == number[0]) for number in self.labels}
+		labels_sequences = {number[0]: np.count_nonzero(self.labels == number[0]) for number in self.labels} # or (unique, counts) = np.unique(self.labels, return_counts=True)
 		img_label        = {i: self.labels[i, 0] for i in range(len(self.labels))}
 		one_hot_labels   = np.zeros((len(self.images), len(labels_sequences)))
 		for j in range(len(one_hot_labels)):
