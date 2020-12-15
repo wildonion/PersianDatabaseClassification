@@ -29,10 +29,10 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 Or 
 
 ```console
-pip install uvloop matplotlib numpy pandas Pillow aiohttp[speedups] ujson torch torchvision
-
+pip install uvloop aiohttp[speedups] ujson matplotlib numpy pandas Pillow torch torchvision
 
 ```
+> ⚠️ `uvloop` module is not supported by windows!
 
 Then
 
@@ -40,7 +40,8 @@ Then
 npm install pm2@latest -g
 ```
 
-Finally extract [`images.tar.xz`]() inside `dataset` folder.
+Finally download [**Persian Database** dataset CSV files]() and extract `images.tar.xz` inside `dataset` folder.
+
 
 ## 💻 Usage
 
