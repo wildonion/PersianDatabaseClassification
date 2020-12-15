@@ -35,11 +35,11 @@ for dirpath, dirnames, files in os.walk(args.path):
 		image = image.resize((args.image_size, args.image_size)).convert('L')
 		image = np.asarray(image)
 		label = int(dirpath[-1]) if dirpath[-2] == " " else int(dirpath[-2:])
-		if dirpath[-13:-8] == "Train":
+		if dirpath[-14:-9] or dirpath[-13:-8] == "Train":
 			print(f"✅ putting {filename} on training set with label {label}")
 			dataset["train_x"].append(image)
 			dataset["train_y"].append([label])
-		elif dirpath[-12:-8] == "Test":
+		elif dirpath[-13:-9] or dirpath[-12:-8] == "Test":
 			print(f"✅ putting {filename} on testing set with label {label}")
 			dataset["test_x"].append(image)
 			dataset["test_y"].append([label])
@@ -51,10 +51,6 @@ dataset["train_x"] = np.asarray(dataset["train_x"]).reshape(-1, args.image_size*
 dataset["train_y"] = np.asarray(dataset["train_y"])
 dataset["test_x"] = np.asarray(dataset["test_x"]).reshape(-1, args.image_size*args.image_size)
 dataset["test_y"] = np.asarray(dataset["test_y"])
-np.random.shuffle(dataset["train_x"])
-np.random.shuffle(dataset["train_y"])
-np.random.shuffle(dataset["test_x"])
-np.random.shuffle(dataset["test_y"])
 
 
 curr_dir = os.path.dirname(os.path.abspath(__file__))
