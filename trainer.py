@@ -49,7 +49,7 @@ from model import CNN, MLP
 # ------------ argument options
 # ------------------------------
 parser = argparse.ArgumentParser(description='Persian Database Classification Trainer')
-parser.add_argument('--network', action='store', type=str, help='MLP or CNN', required=True)
+parser.add_argument('--network', action='store', type=str, help='mlp or cnn', required=True)
 parser.add_argument('--batch-size', action='store', type=int, help='The number of batch size', required=True)
 parser.add_argument('--num-workers', action='store', type=int, help='The number of workers for dataloader object', required=True)
 parser.add_argument('--epoch', action='store', type=int, help='The number of epochs', required=True)

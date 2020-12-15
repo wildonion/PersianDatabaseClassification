@@ -12,9 +12,9 @@ __all__ = ['MLP', 'CNN']
 class MLP(nn.Module):
 	def __init__(self, input_neurons, output_neurons, learning_rate):
 		"""
-				⚠️ https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
+				☕️ https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
 
-			image batch size : (batch, C, H, W) ---flattened---> (batch, C*H*W)
+								 ⚠️ image batch size : (batch, C, H, W) ---flattened---> (batch, C*H*W) ⚠️
 		"""
 		super(MLP, self).__init__()
 		self.learning_rate = learning_rate
@@ -40,11 +40,11 @@ class MLP(nn.Module):
 			the weights to (input_neurons X output_neurons) and pytorch do this automatically in forwarding process.
 
 
-			we can't apply relu on last layer(except hidden layers) with any loss functions because of its derivative nature problem:
-				⚠️ https://stats.stackexchange.com/questions/166595/how-to-apply-cross-entropy-on-rectified-linear-units
+			❗️we can't apply relu on last layer(except hidden layers) with any loss functions because of its derivative nature problem:
+				☕️ https://stats.stackexchange.com/questions/166595/how-to-apply-cross-entropy-on-rectified-linear-units
 
-			we shouldn't apply softmax on last layer when we're using cross entropy loss because the loss itself apply softmax on the logits:
-				⚠️ https://discuss.pytorch.org/t/multi-class-cross-entropy-loss-and-softmax-in-pytorch/24920/3
+			❗️we shouldn't apply softmax on last layer when we're using cross entropy loss because the loss itself apply softmax on the logits:
+				☕️ https://discuss.pytorch.org/t/multi-class-cross-entropy-loss-and-softmax-in-pytorch/24920/3
 
 		"""
 
@@ -64,10 +64,11 @@ class MLP(nn.Module):
 								  	   BATCH SIZE : 32
 								=============================
 
-			dC/dw3 = dC/dy5 * dy5/dw3  => derivative of cross entropy loss w.r.t w3
+			📌 dC/dw3 = dC/dy5 * dy5/dw3  => derivative of cross entropy loss w.r.t w3
 
-		⚠️ derivative of CE loss w.r.t output passed from a softmax layer is logits - labels:
-				https://www.adeveloperdiary.com/data-science/deep-learning/neural-network-with-softmax-in-python/
+					  ⚠️ derivative of CE loss w.r.t output passed from a softmax layer is logits - labels ⚠️ 
+				
+				☕️ https://www.adeveloperdiary.com/data-science/deep-learning/neural-network-with-softmax-in-python/
 
 		"""
 
@@ -81,7 +82,7 @@ class MLP(nn.Module):
 								  	   BATCH SIZE : 32
 								=============================
 
-			dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dw2 => derivative of cross entropy loss w.r.t w2
+			📌 dC/dw2 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dw2 => derivative of cross entropy loss w.r.t w2
 
 		"""
 
@@ -98,7 +99,7 @@ class MLP(nn.Module):
 									   BATCH SIZE : 32
 								=============================
 
-			dC/dw1 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of cross entropy loss w.r.t w1
+			📌 dC/dw1 = dC/dy5 * dy5/dy4 * dy4/dy3 * dy3/dy2 * dy2/dy1 * dy1/dw1 => derivative of cross entropy loss w.r.t w1
 
 		"""
 
@@ -136,12 +137,12 @@ class MLP(nn.Module):
 
 class CNN(nn.Module):
 	"""
-		image batch size : (batch, C, H, W)
+										    ⚠️ image batch size : (batch, C, H, W) ⚠️
 
 		Example:
-		>>> c1 = nn.Conv2d(3, 32, 5, 2, 1) # 3 input channels, 32 output channels, 5 kernel size, 2 is stride and 1 is padding 
-		>>> c1.weight.shape
-		torch.Size([32, 3, 5, 5]) # creates 32 random filters each of with size 3X5X5
+			>>> c1 = nn.Conv2d(3, 32, 5, 2, 1) # 3 input channels, 32 output channels, 5 kernel size, 2 is stride and 1 is padding 
+			>>> c1.weight.shape
+			torch.Size([32, 3, 5, 5]) # creates 32 random filters each of with size 3X5X5
 	"""
 	def __init__(self, input_channels, output_neurons):
 		super(CNN, self).__init__()
@@ -149,9 +150,10 @@ class CNN(nn.Module):
 		self.conv2     = nn.Conv2d(16, 32, kernel_size=5, stride=2, padding=1) # outout image size is half of the input image size
 
 
-		"""
-		C * H * W is the number of input neurons for fc1 layer which is the flattened image batch
-		⚠️ https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
+		"""	
+				☕️ https://discuss.pytorch.org/t/linear-layer-input-neurons-number-calculation-after-conv2d/28659/6
+							
+							⚠️ C * H * W is the number of input neurons for fc1 layer which is the flattened image batch ⚠️
 		"""
 		input_neurons_for_fc1 = self.conv2.shape[1]*self.conv2.shape[2]*self.conv2.shape[3]
 
@@ -179,10 +181,6 @@ class CNN(nn.Module):
 
 		h5 = self.fc2(h4)
 		return h4
-
-
-
-
 
 
 
