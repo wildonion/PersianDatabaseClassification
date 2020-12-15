@@ -96,7 +96,7 @@ def TrainEvalCNN(model, device, e, train_iter, valid_iter, optimizer, criterion)
 		valid_loss = criterion(output, labels.argmax(dim=1)) # calculate the loss between output and labels
 		running_valid_loss += valid_loss.item()
 		if idx % 20 == 0: # log every 20 mini-batch
-			print("[TRAINING LOG]")
+			print("[VALIDATING LOG]")
 			print('\t☕️ [epoch ⇀  %d, sample/mini-batch ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_valid_loss/20, valid_acc))
 			running_valid_loss = 0.
 	# return the last loss and last acc of both loaders at the end of iteration in an epoch
