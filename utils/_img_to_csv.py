@@ -39,7 +39,7 @@ for dirpath, dirnames, files in os.walk(args.path):
 			print(f"✅ putting {filename} on training set with label {label}")
 			dataset["train_x"].append(image)
 			dataset["train_y"].append([label])
-		elif dirpath[-13:-9] or dirpath[-12:-8] == "Test":
+		if dirpath[-13:-9] or dirpath[-12:-8] == "Test":
 			print(f"✅ putting {filename} on testing set with label {label}")
 			dataset["test_x"].append(image)
 			dataset["test_y"].append([label])
