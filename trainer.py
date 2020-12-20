@@ -197,11 +197,11 @@ else:
 
 	if optimizer:
 		for e in range(args.epoch):
-			train_loss, train_acc, val_loss, val_acc = TrainEvalCNN(net.to(device), device, e, train_iter, valid_iter, optimizer=optimizer, criterion=criterion)
+			train_loss, train_acc, valid_loss, valid_acc = TrainEvalCNN(net.to(device), device, e, train_iter, valid_iter, optimizer=optimizer, criterion=criterion)
 			history["train_loss"].append(train_loss)
-			history["train_acc"].append(train_loss)
-			history["valid_loss"].append(train_loss)
-			history["valid_acc"].append(train_loss)
+			history["train_acc"].append(train_acc)
+			history["valid_loss"].append(valid_loss)
+			history["valid_acc"].append(valid_acc)
 			if valid_loss <= valid_loss_min:
 				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
 				print(f'\t📸 model snapshot saved')
@@ -212,9 +212,9 @@ else:
 		for e in range(args.epoch):
 			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), device, e, train_iter, valid_iter, criterion=criterion)
 			history["train_loss"].append(train_loss)
-			history["train_acc"].append(train_loss)
-			history["valid_loss"].append(train_loss)
-			history["valid_acc"].append(train_loss)
+			history["train_acc"].append(train_acc)
+			history["valid_loss"].append(valid_loss)
+			history["valid_acc"].append(valid_acc)
 			if valid_loss <= valid_loss_min:
 				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
 				print(f'\t📸 model snapshot saved')
