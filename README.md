@@ -12,6 +12,12 @@ If you have any question, please feel free to contact me.
 
 To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 
+## Environment Settings
+
+* PyTorch 1.7
+* Python 3.8
+* CUDA 10.2
+
 ## 📝 Performance
 
 ✅ MLP:
@@ -20,27 +26,13 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 
 ## ⚙️ Setup
 
-* Create an environment: ```conda create -n uniXerr```
-* Create the environment using the _scai.yml_ file: ```conda env create -f scai.yml```
-* Activate _scai_ environment: ```conda activate scai```
-* Update the environment using _scai.yml_ file: ```conda env update -f scai.yml --prune```
-* Export your active environment to _scai.yml_ file: ```conda env export | grep -v "^prefix: " > scai.yml```
-
-Or 
-
 ```console
-pip install uvloop aiohttp[speedups] ujson matplotlib numpy pandas Pillow torch torchvision
+pip install requirements.txt && npm install pm2@latest -g
 
 ```
 > ⚠️ `uvloop` module is not supported by windows!
 
-Then
-
-```console
-npm install pm2@latest -g
-```
-
-Finally download [**Persian Database** dataset CSV files](https://drive.google.com/file/d/1aeg4D1rLPOZoLUwBWvj6EUiLNu2I3onQ/view?usp=sharing) and extract `images.tar.xz` inside `dataset` folder.
+Download [**Persian Database** dataset CSV files](https://drive.google.com/file/d/1aeg4D1rLPOZoLUwBWvj6EUiLNu2I3onQ/view?usp=sharing) and extract `images.tar.xz` inside `dataset` folder.
 
 
 ## 💻 Usage
