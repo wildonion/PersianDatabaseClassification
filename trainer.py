@@ -130,7 +130,7 @@ else:
 	# 
 	print(f"\t✅ building dataset pipeline from CSV files\n")
 	# normalize image using calculated per channel mean and std
-	# passing one value for std and mean cause we have one channel
+	# one value for std and mean cause we have one channel
 	# --------------------------------------------------------------------
 	transform = transforms.Compose([ToTensor(), Normalize(mean=mean, std=std)])
 	training_transformed = PersianAlphabetDataset(csv_files=['dataset/train_x.csv', 'dataset/train_y.csv'], transform=transform)
@@ -224,10 +224,10 @@ else:
 	
 	end_time = time.time()
 	total_time = end_time - start_time
-	index_ta, value_ta = max(enumerate(history["train_acc"]), key=operator.itemgetter(1))
-	index_va, value_va = max(enumerate(history["valid_acc"]), key=operator.itemgetter(1))
-	print("➲ Best training accuracy was {} at epoch {}".format(value_ta, index_ta+1))
-	print("➲ Best valid accuracy was {} at epoch {}".format(value_va, index_va+1))
+	index_train_acc, value_train_acc = max(enumerate(history["train_acc"]), key=operator.itemgetter(1))
+	index_val_acc, value_val_acc = max(enumerate(history["valid_acc"]), key=operator.itemgetter(1))
+	print("➲ Best training accuracy was {} at epoch {}".format(value_train_acc, index_train_acc+1))
+	print("➲ Best valid accuracy was {} at epoch {}".format(value_val_acc, index_val_acc+1))
 
 
 
