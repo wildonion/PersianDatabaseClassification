@@ -15,6 +15,7 @@ class MLP(nn.Module):
 				☕️ https://www.deeplearningwizard.com/deep_learning/boosting_models_pytorch/forwardpropagation_backpropagation_gradientdescent/
 
 								 ⚠️ image batch size : (batch, C, H, W) ---flattened---> (batch, C*H*W) ⚠️
+						    ⚠️ you can usually prevent over-fitting if you keep your number of neurons below ⚠️
 		"""
 		super(MLP, self).__init__()
 		self.learning_rate = learning_rate
