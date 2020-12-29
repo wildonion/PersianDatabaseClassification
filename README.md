@@ -12,19 +12,21 @@ If you have any question, please feel free to contact me.
 
 To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 
-## Environment Settings
+## ⚙️ Environment Settings
 
 * PyTorch 1.7
 * Python 3.8
 * CUDA 10.2
 
-## 📝 Performance
+## ⚖️ Performance
+
+> ⚠️ Both models trained on <device_names_here> using default arguments
 
 ✅ MLP:
 
 ✅ CNN:
 
-## ⚙️ Setup
+## 🔧 Setup
 
 ```console
 pip install requirements.txt && npm install pm2@latest -g
@@ -37,7 +39,7 @@ Download [**Persian Database** dataset CSV files](https://drive.google.com/file/
 
 ## 💻 Usage
 
-Run `trainer.py` for training selected model:
+Run `trainer.py` for training selected network(`cnn` or `mlp`):
 
 ```console
 python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
@@ -59,7 +61,7 @@ Both models are trained on CSV files which are the numpy arrays of dataset image
 python utils/_img_to_csv.py --path /path/to/dataset --image-size 64
 ```
 
-#### 📌 calculating std and mean of your dataset
+#### 📌 Calculating std and mean of your dataset
 
 In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data. By using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize(standard scaler) your images to build train and valid dataset pipelines.
 More information about [calculating **mean** and **std** in **PyTorch**](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
@@ -78,11 +80,11 @@ mean, std = CalMeanStd1(training_dataloader)
 
 > `trainer.py` script do this automatically for CSV files dataset 🙂
 
-#### 📌 building pipelines and dataloaders
+#### 📌 Building pipelines and dataloaders
 
 The dataset pipelines of training and valid data will normalize all images using calculated **mean** and **std** and convert them into **PyTorch** tensor. Finally we pass pipelines through dataloader object to prepare them for training and evaluating.
 
-#### 📌 training and evaluating on selected model
+#### 📌 Training and evaluating on selected model
 
 I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`]() function.
 
@@ -92,6 +94,9 @@ For the CNN model I used the built in `backward` method in **PyTorch** of the lo
 
 > 📊 CNN Plotted history
 
-#### 📌 prediction
+#### 📌 Prediction
+
+* [Pre-trained CNN](https://github.com/wildonion/PersianDatabaseClassification/tree/main/utils/cnn.pth)
+* [Pre-trained MLP](https://github.com/wildonion/PersianDatabaseClassification/tree/main/utils/mlp.pth)
 
 > Start predicting 🔮 with [pdc bot](http://t.me/pdc_pytorch_bot) 😎✌️
