@@ -124,6 +124,11 @@ class MLP(nn.Module):
 
 		"""
 		with torch.no_grad():
+			# ========= DEBUGGING =========
+			print(self.dC_w1.shape)
+			print(self.dC_w2.shape)
+			print(self.dC_w3.shape)
+			# =============================
 			self.fc1.weight -= self.learning_rate * self.dC_w1 # size : (512 X input_neurons)
 			self.fc2.weight -= self.learning_rate * self.dC_w2 # size : (256 X 512)
 			self.fc3.weight -= self.learning_rate * self.dC_w3 # size : (output_neurons X 256)
@@ -131,6 +136,12 @@ class MLP(nn.Module):
 
 	def train(self, x, y):
 		output = self.forward(x)
+		# ========= DEBUGGING =========
+		print(output)
+		print(y)
+		print(y.shape)
+		print(output.shape)
+		# =============================
 		self.backward(x, output, y)
 
 
