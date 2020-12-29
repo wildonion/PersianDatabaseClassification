@@ -32,7 +32,7 @@ for dirpath, dirnames, files in os.walk(args.path):
 			continue
 		path = os.path.join(dirpath, filename)
 		image = Image.open(path)
-		image = image.resize((args.image_size, args.image_size)).convert('L')
+		image = image.resize((args.image_size, args.image_size)).convert('L') # convert image to grayscale
 		image = np.asarray(image)
 		label = int(dirpath[-1]) if dirpath[-2] == " " else int(dirpath[-2:])
 		if dirpath[-14:-9] or dirpath[-13:-8] == "Train":

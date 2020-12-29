@@ -54,7 +54,7 @@ parser.add_argument('--batch-size', action='store', type=int, help='The number o
 parser.add_argument('--num-workers', action='store', type=int, help='The number of workers for dataloader object', required=True)
 parser.add_argument('--epoch', action='store', type=int, help='The number of epochs', required=True)
 parser.add_argument('--learning-rate', action='store', type=float, help='Learning rate value', required=True)
-parser.add_argument('--device', action='store', type=str, help='The device to attach the torch to', required=True)
+parser.add_argument('--device', action='store', type=str, help='The device to attach the torch model to', required=True)
 args = parser.parse_args()
 
 
@@ -161,7 +161,7 @@ else:
 	mini_batch_inputs = mini_batch[0]
 	mini_batch_labels = mini_batch[1]
 	plt.figure()
-	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy())
+	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy()) # plot numpy image - (W, H , C)
 	plt.show()
 
 
