@@ -20,7 +20,7 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 
 ## ⚖️ Performance
 
-> ⚠️ Both models trained on <device_names_here> using default arguments
+> ⚠️ Both models trained on <device_names_here> using default arguments.
 
 ✅ MLP:
 
