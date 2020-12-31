@@ -51,6 +51,8 @@ def TrainEvalMLP(model, device, e, train_iter, valid_iter, criterion):
 			print("\n[VALIDATING LOG]")
 			print('\t☕️ [epoch ⇀  %d, sample/mini-batch ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_valid_loss/20, valid_acc))
 			running_valid_loss = 0.
+	# NOTE : to return total loss and acc of all iterations in an epoch you have to sum all loss and accuracy values 
+	# 	 	at the end of each iteration then divide each of them by the length of the loader
 	# return the last loss and last acc of both loaders at the end of iteration in an epoch
 	return train_loss, train_acc, valid_loss, valid_acc
 
@@ -99,6 +101,8 @@ def TrainEvalCNN(model, device, e, train_iter, valid_iter, optimizer, criterion)
 			print("[VALIDATING LOG]")
 			print('\t☕️ [epoch ⇀  %d, sample/mini-batch ⇀  %d, batch size ⇀  %d] \n\t\t ↳  loss: %.3f - acc: %.3f' % (e + 1, idx + 1, images.size(0), running_valid_loss/20, valid_acc))
 			running_valid_loss = 0.
+	# NOTE : to return total loss and acc of all iterations in an epoch you have to sum all loss and accuracy values 
+	# 	 	at the end of each iteration then divide each of them by the length of the loader
 	# return the last loss and last acc of both loaders at the end of iteration in an epoch
 	return train_loss, train_acc, valid_loss, valid_acc
 
