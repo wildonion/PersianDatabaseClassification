@@ -42,7 +42,7 @@ Download [**Persian Database** dataset CSV files](https://drive.google.com/file/
 Run `trainer.py` for training selected network(`cnn` or `mlp`):
 
 ```console
-python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
+python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 1e-3 --device cpu
 ```
 
 After finishing the training process run `bot.py` 🤖 server for prediction using Telegram-bot APIs.  
