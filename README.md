@@ -19,6 +19,7 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 * PyTorch 1.7
 * Python 3.8
 * CUDA 10.2
+* Ubuntu 20.04.1 LTS 
 
 ## ⚖️ Performance
 
