@@ -1,6 +1,8 @@
 
 
-## Persian Database Classification task using PyTorch
+### Persian Database Classification task using PyTorch
+
+---
 
 Author: Mohammaderfan Arefimoghaddam([marefimoghaddam@unixerr.com](mailto:marefimoghaddam@unixerr.com))
 
