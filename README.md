@@ -69,7 +69,7 @@ python utils/_img_to_csv.py --path /path/to/dataset --image-size 64
 In order to normalize the images of your dataset you have to calculate **mean** and **std** of your data. By using one the methods in `_cal_mean_std.py` script inside `utils` folder you can calculate those parameters and normalize(standard scaler) your images to build train and valid dataset pipelines.
 More information about [calculating **mean** and **std** in **PyTorch**](https://discuss.pytorch.org/t/computing-the-mean-and-std-of-dataset/34949/2).
 
-> Remember to pass dataloader object into those methods.
+> ⚠️ Remember to pass dataloader object into those methods.
 
 ```python
 mean, std = CalMeanStd0(training_dataloader)
@@ -91,7 +91,7 @@ The dataset pipelines of training and valid data will normalize all images using
 
 I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`]() function.
 
-For the CNN model I used the built in `backward` method in **PyTorch** of the loss function. It'll automatically calculate the weights using computational graph and update them, so you can access the derivative of each weights' tensor using `.grad` attribute.
+For the CNN model I used the built in `backward` method of the loss function. It'll automatically backward through the network and calculate the gradient of each weights and update them using computational graph. You can access the derivative of each weights' tensor of a specific layer using `.grad` attribute.
 
 > 📊 MLP Plotted history
 
