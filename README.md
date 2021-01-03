@@ -91,7 +91,7 @@ The dataset pipelines of training and valid data will normalize all images using
 
 I coded backpropagation algorithm from scratch using the chain rule of gradient descent optimization technique for training and tuning the weights of MLP model. You can see it in [`backward`]() function.
 
-For the CNN model I used the built in `backward` method of the loss function. It'll automatically backward through the network and calculate the gradient of each weights and update them using computational graph. You can access the derivative of each weights' tensor of a specific layer using `.grad` attribute.
+For the CNN model I used the built in `backward` method of the loss function. It'll automatically backward through the network and calculate the gradient of each weights and update them using computational graph. You can access the derivative of each weights' tensor of a specific layer like so: `self.fc1.weight.grad`.
 
 > 📊 MLP Plotted history
 
