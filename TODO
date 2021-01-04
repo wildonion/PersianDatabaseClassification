@@ -4,7 +4,8 @@
 
 
 
-📌 fix backpropagation algorithm issue with the size of each weights
+📌 fix backpropagation algorithm, the issue with the size of each weights
+📌 build the confusion matrix after training
 📌 building the prediction bot (complete bot.py script)
 📌 complete README (link to backward function) and 
 📌 final push 
