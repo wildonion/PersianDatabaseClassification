@@ -32,7 +32,7 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 ## 🔧 Setup
 
 ```console
-pip install requirements.txt && npm install pm2@latest -g
+pip install -r requirements.txt && npm install pm2@latest -g
 
 ```
 > ⚠️ `uvloop` module is not supported by windows!
