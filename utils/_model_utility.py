@@ -75,7 +75,7 @@ def TrainEvalCNN(model, device, e, train_iter, valid_iter, optimizer, criterion)
 		corrects = (winners == labels_long_tensor[1]) # list of corrects - labels_long_tensor[0] is batch indices and labels_long_tensor[1] is indices of nonzero values
 		train_acc = 100*corrects.sum().float()/float(labels.size(0)) # the ratio of number of correct predictions to the total number of input samples
 		train_loss = criterion(output, labels.argmax(dim=1)) # calculate the loss between output and labels
-		loss.backward() # calculate the gradient using computational graph for all weights
+		train_loss.backward() # calculate the gradient using computational graph for all weights
 		optimizer.step() # update weights and other parameters like biases
 		running_train_loss += train_loss.item()
 		if idx % 20 == 0: # log every 20 mini-batch
