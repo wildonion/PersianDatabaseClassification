@@ -9,6 +9,7 @@
 
 # TOKEN : 1488597268:AAHlrJReS2da55dC4CsaRn_zTFHQbI9eqTM
 # TODO - choose picture for the bot
+# TODO - send every printing message to the user
 
 
 
@@ -21,8 +22,8 @@ import numpy as np
 
 
 
-model_command = "mlp" # TODO - get this value from bot
-input_image = None # TODO - get this value from bot
+model_command = "mlp" # TODO - get this value from the bot
+input_image = None # TODO - get this value from the bot
 
 
 
@@ -42,7 +43,7 @@ if model_command == "mlp":
 			print(f"\t❌ can't load pre-trained model from : {mlp_pre_trained_model_path}\n")
 
 		# TODO - load mlp model
-		# start testing using mlp model
+		# start predicting using mlp model
 		# remember to greyscale input image and resize them to between 60 and 90 pixels
 	else:
 		print(f"\t❌ can't find the {model_command} model path!")
@@ -58,7 +59,7 @@ elif model_command == "cnn":
 			print(f"\t❌ can't load pre-trained model from : {cnn_pre_trained_model_path}\n")
 
 		# TODO - load mlp model
-		# start testing using mlp model
+		# start predicting using mlp model
 		# remember to greyscale input image and resize them to between 60 and 90 pixels
 	else:
 		print(f"\t❌ can't find the {model_command} model path!")	
