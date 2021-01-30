@@ -18,7 +18,7 @@
 |
 |
 | USAGE : _______training_______ 
-|			python trainer.py --network mlp --batch-size 32 --num-workers 4 --epoch 200 --learning-rate 0.001 --device cpu
+|			python trainer.py --network mlp --batch-size 32 --num-workers 4 --epochs 200 --learning-rate 0.001 --device cpu
 |
 |
 |
@@ -40,7 +40,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 import torch.optim as optim
 from dataset import PersianAlphabetDataset
-from utils import ToTensor, Normalize, UnNormalize, CalMeanStd0, TrainEvalCNN, TrainEvalMLP, PlotStat
+from utils import ToTensor, Normalize, UnNormalize, CalMeanStd0, TrainEvalCNN, TrainEvalMLP, PlotStat, GetSample
 from model import CNN, MLP
 
 
@@ -52,7 +52,7 @@ parser = argparse.ArgumentParser(description='Persian Database Classification Tr
 parser.add_argument('--network', action='store', type=str, help='mlp or cnn', required=True)
 parser.add_argument('--batch-size', action='store', type=int, help='The number of batch size', required=True)
 parser.add_argument('--num-workers', action='store', type=int, help='The number of workers for dataloader object', required=True)
-parser.add_argument('--epoch', action='store', type=int, help='The number of epochs', required=True)
+parser.add_argument('--epochs', action='store', type=int, help='The number of epochs', required=True)
 parser.add_argument('--learning-rate', action='store', type=float, help='Learning rate value', required=True)
 parser.add_argument('--device', action='store', type=str, help='The device to attach the torch model to', required=True)
 args = parser.parse_args()
@@ -67,22 +67,6 @@ cuda = torch.cuda.is_available() if args.device == 'cuda' else None
 device = torch.device("cuda" if cuda else "cpu")
 torch.backends.cudnn.benchmark = True
 optimizer = None
-
-
-
-
-
-
-# ------------ helper methods
-# ------------------------------
-def get_sample(dataloader):
-	batch_index = torch.randint(len(dataloader), (1,), device=device)[0]
-	for batch_ndx, sample in enumerate(dataloader): # total training data = len(dataloader) * inputs.size(0)
-		if batch_ndx == batch_index:
-			inputs, labels = sample # sample is a mini-batch (a pack of batch No. data) list with two elements : inputs and labels 
-			break
-	return inputs, labels
-
 
 
 
@@ -129,8 +113,9 @@ else:
 	# 					   ------------------
 	# 
 	print(f"\t✅ building dataset pipeline from CSV files\n")
-	# normalize image using calculated per channel mean and std
-	# one value for std and mean cause we have one channel
+	# normalize image using calculated mean and std per channel
+	# generally mean and std is a list of per channel values
+	# in our case one value for std and mean cause we have one channel
 	# --------------------------------------------------------------------
 	transform = transforms.Compose([ToTensor(), Normalize(mean=mean, std=std)])
 	training_transformed = PersianAlphabetDataset(csv_files=['dataset/train_x.csv', 'dataset/train_y.csv'], transform=transform)
@@ -157,11 +142,11 @@ else:
 	# 
 	print(f"\t✅ plotting a sample from training dataloader object\n")
 	# ---------------------------------------------
-	mini_batch = get_sample(train_iter)
+	mini_batch = GetSample(train_iter, device)
 	mini_batch_inputs = mini_batch[0]
 	mini_batch_labels = mini_batch[1]
 	plt.figure()
-	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy()) # plot numpy image - (W, H , C)
+	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy()) # plot the first image of the mini-batch with args.batch_size images in it as a numpy image - (W, H , C)
 	plt.show()
 
 
@@ -184,6 +169,7 @@ else:
 
 
 
+
 	# 						-------------------------------
 	# --------------------- training and evaluating process
 	# 						-------------------------------
@@ -195,32 +181,20 @@ else:
 	start_time = time.time()
 	history = {"train_loss": [], "valid_loss": [], "train_acc": [], "valid_acc": []}
 
-	if optimizer:
-		for e in range(args.epoch):
-			train_loss, train_acc, valid_loss, valid_acc = TrainEvalCNN(net.to(device), device, e, train_iter, valid_iter, optimizer=optimizer, criterion=criterion)
-			history["train_loss"].append(train_loss)
-			history["train_acc"].append(train_acc)
-			history["valid_loss"].append(valid_loss)
-			history["valid_acc"].append(valid_acc)
-			if valid_loss <= valid_loss_min:
-				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
-				print(f'\t📸 model snapshot saved')
-				torch.save(net.state_dict(), 'utils/mlp.pth')
-				valid_loss_min = val_loss
 
-	else:
-		for e in range(args.epoch):
-			train_loss, train_acc, val_loss, val_acc = TrainEvalMLP(net.to(device), device, e, train_iter, valid_iter, criterion=criterion)
-			history["train_loss"].append(train_loss)
-			history["train_acc"].append(train_acc)
-			history["valid_loss"].append(valid_loss)
-			history["valid_acc"].append(valid_acc)
-			if valid_loss <= valid_loss_min:
-				print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
-				print(f'\t📸 model snapshot saved')
-				torch.save(net.state_dict(), 'utils/cnn.pth')
-				valid_loss_min = val_loss
-	
+	for e in range(args.epochs):
+		loggings = TrainEvalCNN(net.to(device), device, e, train_iter, valid_iter, optimizer=optimizer, criterion=criterion) if optimizer else TrainEvalMLP(net.to(device), device, e, train_iter, valid_iter, criterion=criterion)
+		train_loss, train_acc, valid_loss, valid_acc = loggings[0], loggings[1], loggings[2], loggings[3]
+		history["train_loss"].append(train_loss)
+		history["train_acc"].append(train_acc)
+		history["valid_loss"].append(valid_loss)
+		history["valid_acc"].append(valid_acc)
+		if valid_loss <= valid_loss_min:
+			print(f'\t⚠️ validation loss decreased ({valid_loss_min:.6f} ☛ {val_loss:.6f})')
+			print(f'\t📸 model snapshot saved')
+			torch.save(net.state_dict(), f'utils/{args.network}.pth')
+			valid_loss_min = val_loss
+
 	
 	end_time = time.time()
 	total_time = end_time - start_time

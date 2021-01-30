@@ -131,3 +131,11 @@ def PlotStat(history):
 		plt.legend(['train', 'valid'])
 		plt.savefig(loss_fig_path)
 		print(f"\t➢   plots saved at {loss_fig_path}\n")
+
+
+
+def GetSample(dataloader, device):
+	batch_index = torch.randint(len(dataloader), (1,), device=device)[0]
+	for batch_ndx, sample in enumerate(dataloader): # total training data = len(dataloader) * inputs.size(0)
+		if batch_ndx == batch_index:
+			return sample # sample is a mini-batch (a pack of batch No. data) list with two elements : inputs and labels - cause dataloader object split the dataset into small batches
