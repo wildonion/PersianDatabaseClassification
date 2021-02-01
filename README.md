@@ -81,7 +81,7 @@ or
 mean, std = CalMeanStd1(training_dataloader)
 ```
 
-> `trainer.py` script do this automatically for CSV files dataset 🙂
+> ⚠️ `trainer.py` script do this automatically for CSV files dataset 🙂
 
 #### 📌 Building pipelines and dataloaders
 
