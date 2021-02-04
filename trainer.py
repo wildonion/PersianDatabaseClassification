@@ -146,7 +146,7 @@ else:
 	mini_batch_inputs = mini_batch[0]
 	mini_batch_labels = mini_batch[1]
 	plt.figure()
-	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy()) # plot the first image of the mini-batch with args.batch_size images in it as a numpy image - (W, H , C)
+	plt.imshow(mini_batch_inputs[0].permute(1, 2, 0).numpy()) # plot the first image of the mini-batch with args.batch_size images in it as a numpy image - (H, W , C)
 	plt.show()
 
 
