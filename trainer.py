@@ -140,8 +140,11 @@ else:
 	# --------------------- plotting a sample
 	#						-----------------
 	# 
-	print(f"\t✅ plotting a sample from training dataloader object\n")
-	# ---------------------------------------------
+	print(f"\t✅ plotting a sample from training dataloader object\n")	
+	# if we have 50 pack of data with 20 data in each pack 
+	# then we have 1000 total data and a mini-batch 
+	# is one iteration through that 50 pack inside the dataloader
+	# ----------------------------------------------------------------
 	mini_batch = GetSample(train_iter, device)
 	mini_batch_inputs = mini_batch[0]
 	mini_batch_labels = mini_batch[1]
