@@ -7,5 +7,6 @@
 📌 fix backpropagation algorithm, the issue with the size of each weights
 📌 build the confusion matrix after training
 📌 building the prediction bot (complete bot.py script)
-📌 complete README (link to backward function) and 
+📌 create docker services using docker-compose file
+📌 complete README (link to backward function and docker setup) and
 📌 final push 
