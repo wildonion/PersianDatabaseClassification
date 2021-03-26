@@ -5,6 +5,7 @@
 
 
 📌 fix backpropagation algorithm, the issue with the size of each weights
+📌 train MLP and CNN params (weights and biases) using genetic algorithms
 📌 build the confusion matrix after training
 📌 building the prediction bot (complete bot.py script)
 📌 create docker services using docker-compose file
