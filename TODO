@@ -8,6 +8,6 @@
 📌 train MLP and CNN params (weights and biases) using GA(ES)
 📌 build the confusion matrix after training
 📌 building the prediction bot (complete bot.py script)
-📌 create docker services using docker-compose file
+📌 create docker services for the bot server using docker-compose file
 📌 complete README (link to backward function and docker setup) and
 📌 final push 
