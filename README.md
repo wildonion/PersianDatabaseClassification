@@ -32,7 +32,7 @@ To extract the data please contact with [Dr. Karim Faez](mailto:kfaezaut.ac.ir)
 ## 🔧 Setup
 
 ```console
-pip install -r requirements.txt && npm install pm2@latest -g
+docker build -t pdc .
 
 ```
 > ⚠️ `uvloop` module is not supported by windows!
@@ -45,13 +45,13 @@ Download [**Persian Database** dataset CSV files](https://drive.google.com/file/
 Run `trainer.py` for training selected network(`cnn` or `mlp`):
 
 ```console
-python trainer.py --network mlp --batch-size 32 --num-workers 4 --epochs 200 --learning-rate 1e-3 --device cpu
+sudo docker run pdc trainer.py --network mlp --batch-size 32 --num-workers 4 --epochs 200 --learning-rate 1e-3 --device cpu
 ```
 
 After finishing the training process run `bot.py` 🤖 server for prediction using Telegram-bot APIs.  
 
 ```console
-pm2 start bot.py
+sudo docker run pdc bot.py
 ```
 
 ## 📋 Procedures
