@@ -6,7 +6,7 @@
 
 📌 fix backpropagation algorithm, the issue with the size of each weights
 📌 train MLP and CNN params (weights and biases) using GA(ES)
-📌 build the confusion matrix after training
+📌 build the confusion matrix after training (accuracy, precision, recall and f1 scores)
 📌 building the prediction bot (complete bot.py script)
 📌 create docker services for the bot server using docker-compose file
 📌 complete README (link to backward function and docker setup) and
