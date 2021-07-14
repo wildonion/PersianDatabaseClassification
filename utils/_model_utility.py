@@ -8,6 +8,9 @@ plt.style.use('ggplot')
 
 
 
+# NOTE - 200 iterations through the dataloader means iterate through 200 minibatch samples with 64 batch of input data in each
+
+
 
 def TrainEvalMLP(model, device, e, train_iter, valid_iter, criterion):
 	# =============
